@@ -33,11 +33,15 @@
   </div>
 </template>
 <script setup lang="ts">
-import { ref, defineProps, computed, watch } from 'vue'
+import { ref, computed, watch } from 'vue'
 
+interface SearchOption {
+  code: string | number
+  name: string
+}
 const props = defineProps<{
   searchVal: string
-  searchOption: any[]
+  searchOption: SearchOption[]
 }>()
 const emit = defineEmits<{
   (e: 'search', value: string | null): void

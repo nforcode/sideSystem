@@ -1,14 +1,15 @@
 import axios from 'axios'
 
 const api = axios.create({
-  baseURL: import.meta.env.VITE_API_BASE_URL || 'http://localhost:3000/',
+  baseURL: import.meta.env.VITE_API_BASE_URL,
   timeout: 10000,
   headers: {
     'Content-Type': 'application/json',
   },
 })
+
 const request = axios.create({
-  baseURL: 'http://localhost:3000/',
+  baseURL: import.meta.env.VITE_API_BASE_URL,
   headers: { 'content-type': 'application/json' },
   // withCredentials: true,
 });
@@ -27,31 +28,52 @@ api.interceptors.response.use(
     return Promise.reject(error)
   },
 )
-export const NormalGet = (module, url, data) => {
-  const p = [];
-  if (data) {
-    Object.keys(data).forEach((key) => {
-      // p.push(`${key}=${encodeURI(data[key] ? data[key].toString() : '').replace(/#/g, '%23').replace(/&/g, '%26')}`);
-      const encodedKey = encodeURI(key);
-      const encodedValue = encodeURI(data[key] ? data[key].toString() : '').replace(/\+/g, '%2B').replace(/#/g, '%23').replace(/&/g, '%26');
-      p.push(`${encodedKey}=${encodedValue}`);
-    });
-  }
-  const parms = p.length ? `?${p.join('&')}` : '';
-  return request.get(`${module}${url}${parms}`);
+type QueryParams = Record<string, string | number | boolean | undefined | null>
+
+function encodeQuery(params: QueryParams): string {
+  return Object.entries(params)
+    .filter(([, value]) => value !== undefined && value !== null)
+    .map(([key, value]) => {
+      const encodedKey = encodeURIComponent(key);
+      const encodedValue = encodeURIComponent(String(value))
+        .replace(/\+/g, '%2B')
+        .replace(/#/g, '%23')
+        .replace(/&/g, '%26');
+      return `${encodedKey}=${encodedValue}`;
+    })
+    .join('&');
+}
+
+export const NormalGet = (
+  module: string,
+  url: string,
+  data?: QueryParams
+) => {
+  const queryString = data ? `?${encodeQuery(data)}` : '';
+  return request.get(`${module}${url}${queryString}`);
 };
 
-export const NormalPost = (module, url, data) => {
-  const postData = data ? JSON.stringify(data) : '';
-  return request.post(`${module}${url}`, postData);
+export const NormalPost = (
+  module: string,
+  url: string,
+  data?: object
+) => {
+  return request.post(`${module}${url}`, data ?? {});
 };
 
-export const NormalPut = (module, url, data) => {
-  const putData = data ? JSON.stringify(data) : '';
-  return request.put(`${module}${url}`, putData,);
+export const NormalPut = (
+  module: string,
+  url: string,
+  data?: object
+) => {
+  return request.put(`${module}${url}`, data ?? {});
 };
 
-export const NormalDelete = (module, url, data) => {
+export const NormalDelete = (
+  module: string,
+  url: string,
+  data?: object
+) => {
   return request.delete(`${module}${url}`, { data });
 };
 export default api

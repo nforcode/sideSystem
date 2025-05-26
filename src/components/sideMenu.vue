@@ -2,7 +2,12 @@
   <div id="side" class="ps-3">
     <div id="side_panel" class="panel-group">
       <el-collapse v-model="activeMenu" accordion>
-        <el-collapse-item v-for="item in mainMenu" :key="item.code" :name="item.code" class="main-menu-item ripple">
+        <el-collapse-item
+          v-for="item in mainMenu"
+          :key="item.code"
+          :name="item.code"
+          class="main-menu-item ripple"
+        >
           <template #title>
             <el-icon class="mr-1">
               <component :is="item.icon" />
@@ -28,10 +33,8 @@
 </template>
 <script setup lang="ts">
 import { ref } from 'vue'
-import { mainMenu, MenuItem } from '@/components/menu'
+import { mainMenu } from '@/components/menu'
 const activeMenu = ref('') // 當前展開的 menu code
-const sideMenu = [...mainMenu]
-
 </script>
 <style scoped>
 /* #adc_defect_manage_title {
@@ -225,6 +228,6 @@ a.collapsed i.fa-chevron-circle-left:before {
 
 :deep(.el-collapse-item__content) {
   padding-bottom: 5px;
-  background: #E9E9E9;
+  background: #e9e9e9;
 }
 </style>

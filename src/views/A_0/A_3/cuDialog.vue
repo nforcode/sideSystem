@@ -1,13 +1,13 @@
 <script setup lang="ts">
 import { ref, watch, nextTick } from 'vue'
 import { ElMessage } from 'element-plus'
-import type { groupFormdata } from '@/type/user'
+import type { userFormdata } from '@/type/user'
 
 const props = defineProps<{
   dialogVisible: boolean
   dialogTitle: string
-  dialogFormData: groupFormdata
-  sendFunction: (data: groupFormdata) => void
+  dialogFormData: userFormdata
+  sendFunction: (data: userFormdata) => void
 }>()
 const emit = defineEmits<{
   (e: 'visibleEmit', value: boolean): void
@@ -16,31 +16,40 @@ const emit = defineEmits<{
 const loading = ref(true)
 const formTitle = ref('')
 
-const formData = ref<groupFormdata>({
-  groupCode: '',
-  groupName: '',
+const formData = ref<userFormdata>({
+  userCode: '',
+  userName: '',
   enable: true,
-  userList: [],
-  groupDescription: '',
+  groupList: [],
+  userDescription: '',
   id: '',
+  password: '',
 })
 const formVisible = ref(false)
 const form = ref<InstanceType<typeof import('element-plus')['ElForm']> | null>(null)
 const formRules = {
-  groupCode: [
+  userCode: [
     {
       required: true,
-      message: '請輸入群組代碼',
+      message: '請輸入使用者代碼',
       trigger: ['blur', 'change'],
       pattern: /^[a-zA-Z0-9_-]{1,25}$/,
     },
   ],
-  groupName: [
+  userName: [
     {
       required: true,
-      message: '請輸入群組名稱',
+      message: '請輸入使用者名稱',
       trigger: ['blur', 'change'],
       pattern: /^[\w\u4e00-\u9fa5\-_() \t]*[\w\u4e00-\u9fa5\-_()]{0,25}$/,
+    },
+  ],
+  password: [
+    {
+      required: true,
+      message: '請輸入密碼',
+      trigger: ['blur', 'change'],
+      pattern: /^[a-zA-Z0-9!#$%&()*+,-./:;<=>?@[\]^_`{|}~\s]{1,25}$/,
     },
   ],
 }
@@ -74,11 +83,12 @@ watch(
       })
     } else {
       Object.assign(formData.value, {
-        groupCode: '',
-        groupName: '',
+        userCode: '',
+        userName: '',
+        password: '',
         enable: true,
-        userList: [],
-        groupDescription: '',
+        groupList: [],
+        userDescription: '',
         id: '',
       })
     }
@@ -93,7 +103,7 @@ watch(
     v-model="formVisible"
     :before-close="dialogClose"
     :close-on-click-modal="false"
-    :title="`使用者群組-${formTitle}`"
+    :title="`使用者管理-${formTitle}`"
     :z-index="1000"
     width="600"
     align-center
@@ -108,9 +118,9 @@ watch(
       >
         <el-row :gutter="8">
           <el-col :span="24" :md="12">
-            <el-form-item prop="groupCode" label="group code">
+            <el-form-item prop="userCode" label="user code">
               <el-input
-                v-model="formData.groupCode"
+                v-model="formData.userCode"
                 style="width: 100%"
                 maxlength="25"
                 show-word-limit
@@ -119,12 +129,23 @@ watch(
             </el-form-item>
           </el-col>
           <el-col :span="24" :md="12">
-            <el-form-item prop="groupName" label="group name">
+            <el-form-item prop="userName" label="user name">
               <el-input
-                v-model="formData.groupName"
+                v-model="formData.userName"
                 style="width: 100%"
                 maxlength="25"
                 show-word-limit
+              />
+            </el-form-item>
+          </el-col>
+          <el-col :span="24" :md="12">
+            <el-form-item prop="password" label="password" autocomplete="off" show-password>
+              <el-input
+                type="password"
+                v-model="formData.password"
+                style="width: 100%"
+                maxlength="25"
+                show-password
               />
             </el-form-item>
           </el-col>
@@ -136,10 +157,10 @@ watch(
         </el-row>
         <el-row :gutter="8">
           <el-col :span="24">
-            <el-form-item prop="groupDescription" label="Description">
+            <el-form-item prop="userDescription" label="Description">
               <el-input
                 type="textarea"
-                v-model="formData.groupDescription"
+                v-model="formData.userDescription"
                 style="width: 100%"
                 maxlength="50"
                 show-word-limit
@@ -155,7 +176,7 @@ watch(
         style="margin-bottom: 10px"
         background
         layout="prev, pager, next, jumper"
-        :total="formData.userList.length"
+        :total="formData.groupList.length"
         :current-page="currentPage"
         :page-size="pageSize"
         @current-change="handleCurrentChange"
@@ -163,13 +184,13 @@ watch(
       />
       <el-table
         v-loading="loading"
-        :data="formData.userList"
+        :data="formData.groupList"
         style="width: 100%"
         height="451"
         stripe
       >
-        <el-table-column prop="groupCode" label="groupCode" :min-width="160" />
-        <el-table-column prop="groupName" label="groupName" :min-width="160" />
+        <el-table-column prop="userCode" label="userCode" :min-width="160" />
+        <el-table-column prop="userName" label="userName" :min-width="160" />
         <el-table-column fixed="right" align="center" label="tableOp" min-width="150">
           <template #default="scope">
             <el-button-group>
@@ -182,7 +203,7 @@ watch(
         style="margin-top: 20px"
         background
         layout="prev, pager, next, jumper"
-        :total="formData.userList.length"
+        :total="formData.groupList.length"
         :current-page="currentPage"
         :page-size="pageSize"
         @current-change="handleCurrentChange"

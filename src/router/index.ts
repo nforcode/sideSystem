@@ -2,6 +2,7 @@ import { createRouter, createWebHistory } from 'vue-router'
 import indexPage from '@/views/indexPage.vue'
 import A_1 from '@/views/A_0/A_1.vue'
 import A_2 from '@/views/A_0/A_2.vue'
+import A_3 from '@/views/A_0/A_3.vue'
 // import dynamicWrapper from '@/router/_DynamicWrapper.vue'
  import notFound from '@/router/notFound.vue'
 const routes = [
@@ -29,6 +30,11 @@ const routes = [
     path: '/A_2',
     name: 'A_2',
     component: A_2,
+  },
+     {
+    path: '/A_3',
+    name: 'A_3',
+    component: A_3,
   },
  {
     path: '/404',

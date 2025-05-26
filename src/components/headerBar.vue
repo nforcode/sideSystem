@@ -24,14 +24,14 @@
         </li>
         <li class="topbar-item ms-2">
           <!-- <loading :isLoading="this.$store.getters.getBUlist.length === 0"></loading> -->
-          <el-select class="rwd-sm-hide" placeholder="廠區" size="large" @change="changNowBU" />
+          <el-select class="rwd-sm-hide" placeholder="廠區" size="large" />
         </li>
         <li class="topbar-item ms-2">
-          <el-select v-model="getLang" size="large" @change="setLang" class="rwd-sm-hide">
+          <!-- <el-select v-model="getLang" size="large" @change="setLang" class="rwd-sm-hide">
             <el-option value="zhtw" :label="'Lang_op_tw'"></el-option>
             <el-option value="cn" :label="'Lang_op_cn'"></el-option>
             <el-option value="en" :label="'Lang_op_en'"></el-option>
-          </el-select>
+          </el-select> -->
         </li>
         <li class="topbar-item ms-2">
           <el-dropdown trigger="click" style="margin-left: 10px">

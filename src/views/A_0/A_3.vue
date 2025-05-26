@@ -1,11 +1,13 @@
 <script setup lang="ts">
 import { ref, onMounted, computed } from 'vue'
 import searchBar from '@/components/searchBar.vue'
-import { getUserGroupList, createUserGroup, updateUserGroup, deleteUserGroup } from '@/api/A'
+import { getUserList, createUser, updateUser, deleteUser } from '@/api/A'
 import { ElMessage, ElMessageBox } from 'element-plus'
-import cuDialog from '@/views/A_0/A_2/cuDialog.vue'
-import type { groupFormdata } from '@/type/user'
+import cuDialog from '@/views/A_0/A_3/cuDialog.vue'
+import type { userFormdata } from '@/type/user'
 import { showSuccess, showError } from '@/components/msgAlert'
+import SHA256 from 'crypto-js/sha256'
+
 const searchData = ref({
   code: null,
 })
@@ -18,7 +20,7 @@ const apiData = ref({
 const pageSize = ref(10)
 const currentPage = ref(1)
 const loading = ref(true)
-const groupOption = ref([])
+const userOption = ref([])
 // 顯示在 <el-table> 上的資料
 const pagedData = computed(() => {
   const start = (currentPage.value - 1) * pageSize.value
@@ -41,15 +43,15 @@ function handleSizeChange(size: number) {
 
 function getTableData() {
   loading.value = true
-  const data = { groupCode: searchData.value.code }
-  getUserGroupList(data)
-    .then((res: { status: number; data: groupFormdata[]; statusText: string }) => {
+  const data = { userCode: searchData.value.code }
+  getUserList(data)
+    .then((res: { status: number; data: userFormdata[]; statusText: string }) => {
       if (res.status === 200) {
         apiData.value.tableData = res.data
-        groupOption.value = res.data.map((item) => {
+        userOption.value = res.data.map((item) => {
           return {
-            code: item.groupCode,
-            name: item.groupName,
+            code: item.userCode,
+            name: item.userName,
           }
         })
       } else {
@@ -83,60 +85,70 @@ function emitData(value: string | null) {
   getTableData()
 }
 
-const groupDialogVisible = ref(false)
+const userDialogVisible = ref(false)
 
-const groupData = ref({
-  groupCode: '',
-  groupName: '',
+const userData = ref({
+  userCode: '',
+  userName: '',
+  password: '',
   enable: true,
-  userList: [],
-  groupDescription: '',
+  groupList: [],
+  userDescription: '',
   id: '',
 })
 
-const groupDialoghandle = ref('')
+const userDialoghandle = ref('')
 
 function handleAdd() {
-  openGroupDialog('add')
+  openUserDialog('add')
 }
-function openGroupDialog(mode: 'add' | 'edit', data: object = {}) {
-  groupDialoghandle.value = mode
-  groupData.value =
+function openUserDialog(mode: 'add' | 'edit', data: object = {}) {
+  userDialoghandle.value = mode
+  userData.value =
     mode === 'add'
-      ? (groupData.value = {
-          groupCode: '',
-          groupName: '',
+      ? (userData.value = {
+          userCode: '',
+          userName: '',
+          password: '',
           enable: true,
-          userList: [],
-          groupDescription: '',
+          groupList: [],
+          userDescription: '',
           id: '',
         })
-      : { ...JSON.parse(JSON.stringify(data)) }
-  groupDialogVisible.value = true
+      : {
+          ...JSON.parse(JSON.stringify(data)),
+          password: '',
+        }
+  userDialogVisible.value = true
 }
 
-function groupDialogClose() {
-  groupDialogVisible.value = false
+function userDialogClose() {
+  userDialogVisible.value = false
 }
 
-function groupDataSend(data: groupFormdata) {
-  if (groupDialoghandle.value === 'add') {
-    groupDataCreate(data)
-  } else if (groupDialoghandle.value === 'edit') {
-    groupDataEdit(data)
+function hashPassword(rawPassword: string) {
+  return SHA256(rawPassword).toString()
+}
+
+function userDataSend(data: userFormdata) {
+  if (userDialoghandle.value === 'add') {
+    userDataCreate(data)
+  } else if (userDialoghandle.value === 'edit') {
+    userDataEdit(data)
   }
 }
-function groupDataCreate(data: groupFormdata) {
+function userDataCreate(data: userFormdata) {
   loading.value = true
   const sendData = {
-    groupCode: data.groupCode,
-    groupName: data.groupName,
+    userCode: data.userCode,
+    userName: data.userName,
+    password: hashPassword(data.password),
     enable: data.enable,
-    userList: data.userList,
-    groupDescription: data.groupDescription,
+    groupList: data.groupList,
+    userDescription: data.userDescription,
   }
-  createUserGroup(sendData)
-    .then((res: { status: number; data: groupFormdata[]; statusText: string }) => {
+  createUser(sendData)
+    .then((res: { status: number; data: userFormdata[]; statusText: string }) => {
       if (res.status === 201) {
         emitData(null)
         showSuccess('Create Success')
@@ -148,19 +160,19 @@ function groupDataCreate(data: groupFormdata) {
       showError(error)
     })
     .finally(() => {
-      groupDialogClose()
+      userDialogClose()
       loading.value = false
     })
 }
 
 function handleEdit(row: object) {
-  openGroupDialog('edit', row)
+  openUserDialog('edit', row)
 }
 
-function groupDataEdit(data: groupFormdata) {
+function userDataEdit(data: userFormdata) {
   loading.value = true
-  updateUserGroup(data)
-    .then((res: { status: number; data: groupFormdata[]; statusText: string }) => {
+  updateUser(data)
+    .then((res: { status: number; data: userFormdata[]; statusText: string }) => {
       if (res.status === 200) {
         emitData(null)
         showSuccess('Edit Success')
@@ -172,19 +184,19 @@ function groupDataEdit(data: groupFormdata) {
       showError(error)
     })
     .finally(() => {
-      groupDialogClose()
+      userDialogClose()
       loading.value = false
     })
 }
 
-function handleDel(row: { groupName: string }) {
-  ElMessageBox.confirm(`確定要刪除 ${row.groupName}？`, '使用者群組 - Delete', {
+function handleDel(row: { userName: string }) {
+  ElMessageBox.confirm(`確定要刪除 ${row.userName}？`, '使用者 - Delete', {
     confirmButtonText: '確認刪除',
     cancelButtonText: '取消',
     type: 'error',
   })
     .then(() => {
-      groupDataDelete(row)
+      userDataDelete(row)
     })
     .catch((action: string) => {
       ElMessage({
@@ -194,9 +206,9 @@ function handleDel(row: { groupName: string }) {
     })
 }
 
-function groupDataDelete(row: object) {
+function userDataDelete(row: object) {
   loading.value = true
-  deleteUserGroup(row)
+  deleteUser(row)
     .then((res) => {
       if (res.status === 200) {
         emitData(null)
@@ -210,7 +222,7 @@ function groupDataDelete(row: object) {
       showError(error)
     })
     .finally(() => {
-      groupDialogClose()
+      userDialogClose()
       loading.value = false
     })
 }
@@ -220,7 +232,7 @@ function groupDataDelete(row: object) {
   <div class="frameContainer">
     <searchBar
       :searchVal="searchData"
-      :searchOption="groupOption"
+      :searchOption="userOption"
       @search="emitData"
       @addData="handleAdd"
     />
@@ -237,8 +249,8 @@ function groupDataDelete(row: object) {
         @size-change="handleSizeChange"
       />
       <el-table v-loading="loading" :data="pagedData" style="width: 100%" height="451" stripe>
-        <el-table-column prop="groupCode" label="groupCode" :min-width="160" />
-        <el-table-column prop="groupName" label="groupName" :min-width="160" />
+        <el-table-column prop="userCode" label="userCode" :min-width="160" />
+        <el-table-column prop="userName" label="userName" :min-width="160" />
         <el-table-column prop="enable" label="enable" :min-width="80">
           <template #default="scope">
             <el-tag
@@ -252,7 +264,7 @@ function groupDataDelete(row: object) {
             </el-tag>
           </template>
         </el-table-column>
-        <el-table-column prop="groupDescription" label="groupDescription" :min-width="160" />
+        <el-table-column prop="userDescription" label="userDescription" :min-width="160" />
         <el-table-column fixed="right" align="center" label="tableOp" min-width="150">
           <template #default="scope">
             <el-button-group>
@@ -277,11 +289,11 @@ function groupDataDelete(row: object) {
     </div>
     <!--新增編輯頁 ------------------------------------------------------------------------ -->
     <cuDialog
-      @visibleEmit="groupDialogClose"
-      :dialogVisible="groupDialogVisible"
-      :dialogTitle="groupDialoghandle"
-      :dialogFormData="groupData"
-      :sendFunction="groupDataSend"
+      @visibleEmit="userDialogClose"
+      :dialogVisible="userDialogVisible"
+      :dialogTitle="userDialoghandle"
+      :dialogFormData="userData"
+      :sendFunction="userDataSend"
     >
     </cuDialog>
   </div>

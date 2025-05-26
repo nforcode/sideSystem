@@ -48,8 +48,8 @@
 <script setup lang="ts">
 import headerBar from '@/components/headerBar.vue'
 import sideMenu from '@/components/sideMenu.vue'
-import { mainMenu, MenuItem } from '@/components/menu'
-import { ref, watch, computed } from 'vue'
+import { mainMenu } from '@/components/menu'
+import { ref, watch } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 
 // const isSmallScreen = ref(false)
@@ -62,12 +62,8 @@ const route = useRoute()
 // 頁簽列表
 const tabList = ref([{ title: '首頁', path: '/index', closable: false }])
 const activeTab = ref('/index')
-// 你可以根據 tabList 動態產生要緩存的 component 名稱
-const cachedComponentNames = computed(
-  () => tabList.value.map((tab) => tab.code) // 假設 code 對應 component 的 name
-)
 // 切換頁簽時更新路由
-function switchTab(tab: any) {
+function switchTab(tab: { paneName: string }) {
   router.push(tab.paneName)
 }
 
