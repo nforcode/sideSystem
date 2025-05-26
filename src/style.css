@@ -1,0 +1,484 @@
+/* * {
+  outline: 1px solid pink;
+} */
+
+body {
+  width: 100% !important;
+  height: 100%;
+  margin: 0px;
+  padding: 0px !important;
+  overflow: hidden;
+  /* overflow-x: hidden;
+  overflow-y: scroll !important; */
+  /* -ms-overflow-style: none;
+	scrollbar-width: none; */
+}
+
+a,
+a:hover {
+  text-decoration: none !important;
+}
+
+ul {
+  padding: 0 !important;
+  margin: 0 !important;
+}
+
+li {
+  list-style-type: none;
+}
+
+hr {
+  margin-top: 0.5rem;
+  margin-bottom: 0.8rem;
+}
+
+#container {
+  position: relative;
+  top: 77px;
+  height: 100%;
+
+  /* height: calc(100% - 73px); */
+  /* max-height: 841px; */
+}
+/* 選單收合 begin */
+
+#menuPanel {
+  box-shadow: 0px 0px 10px #cbcbcb;
+
+  max-width: 100%;
+  position: fixed;
+  /* min-width: 415px;*/
+  /* menu 收合會有動畫 */
+  transform: translate3d(0, 0, 0);
+  transition: all 0.3s;
+  top: 65px;
+  left: 0;
+  z-index: 1;
+}
+#side_panel {
+  white-space: nowrap;
+  overflow-x: scroll !important;
+  padding-top: 24px;
+}
+#sys_side {
+  padding-bottom: 24px;
+}
+.menuClose {
+  margin-left: -17%;
+}
+#mainFrame {
+  margin-left: 16%;
+  transform: translate3d(0, 0, 0);
+  transition: all 0.3s;
+  height: 100%;
+  overflow: hidden;
+  /* height: calc(100vh - 77px);
+   overflow-x: hidden;
+  overflow-y: scroll; */
+}
+#mainFrame.menuClose {
+  margin-left: 0;
+}
+#mainFrame.rwd-md-show {
+  margin-left: 0;
+}
+#sideBtn {
+  position: absolute;
+  right: -10%;
+  top: 83%;
+  width: 31px;
+  min-height: 40px;
+  padding: 3px 9px 2px 9px;
+  text-align: right;
+  border-radius: 0px 5px 5px 0px;
+  z-index: 1000;
+}
+/* 選單收合 end */
+
+/* 選單樣式 begin */
+
+#side {
+  background: #fff;
+  overflow: auto;
+  /*max-height: 841px;*/
+  min-height: 100%;
+}
+
+#side #side_panel {
+  overflow-x: hidden;
+  overflow-y: scroll;
+  /*max-height: 600px;*/
+  padding-right: 2px;
+  height: 66vh;
+}
+
+#side #side_panel::-webkit-scrollbar {
+  display: block;
+  width: 10px;
+  height: 10px;
+}
+
+#side #side_panel::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+#side #side_panel::-webkit-scrollbar-thumb {
+  background: #568ca5;
+  border-radius: 10px;
+}
+
+#side #side_panel::-webkit-scrollbar-thumb:hover {
+  background: #76b7d4;
+}
+#side_panel a.panel-title,
+#side_panel ul li a {
+  display: block;
+  font-size: 1.125rem;
+}
+
+#side_panel a.panel-title {
+  color: #75818b;
+  position: relative;
+  border-bottom: 1px dashed #ececec;
+  /* height: 56px; */
+  line-height: 56px;
+  padding: 0rem 1.6rem;
+}
+#side_panel ul li a,
+#side_panel ul li a.panel-title {
+  padding: 0rem 1.6rem 0rem 2rem;
+}
+
+#side_panel ul li a.haschild.panel-title {
+  border-bottom: none;
+}
+
+#side_panel ul {
+  padding-left: 0;
+}
+
+#side_panel ul li {
+  cursor: pointer;
+  text-align: left;
+  padding: 0;
+  border: none;
+  /* height: 56px; */
+  line-height: 56px;
+}
+
+#side_panel ul li a,
+#side_panel ul li a.panel-title {
+  /* background-color: #ecf5ff; */
+  background-color: #68a9d6;
+  color: #fff;
+}
+
+/* Ripple effect */
+
+.ripple {
+  background-position: center;
+  transition: background 0.8s;
+}
+
+.ripple:hover {
+  background: #92c6e0 radial-gradient(circle, transparent 1%, #92c6e0 1%) center/15000%;
+}
+
+.ripple:active {
+  background-color: #fff;
+  background-size: 100%;
+  transition: background 0s;
+}
+
+#side_panel a:hover,
+#side_panel ul li a.haschild.panel-title:hover {
+  color: #fff;
+  text-shadow: 0px 0px 5px #000;
+  background: #438fc3;
+}
+
+#side_panel .panel-title i.fa-chevron-circle-left {
+  position: absolute;
+  right: 7%;
+  top: 26%;
+}
+#side_panel .panel-title i.ticon {
+  width: 30px;
+  padding-right: 10px;
+}
+
+/*未下拉時的icon*/
+a.collapsed i.fa-chevron-circle-left:before {
+  content: '\f13a';
+}
+
+/* 無子項選中頁面；屬於子項選中頁面 */
+/* #side_panel .panel-title.router-link-active,
+  #side_panel ul li a.router-link-active {
+    background: #75818b;
+    color: #fff;
+    text-shadow: 0px 0px 5px #000;
+  } */
+
+/* 最外層有子項且開著項目 */
+#side_panel a.haschild.panel-title:not(.collapsed) {
+  color: #1c95e8;
+}
+#side_panel a.haschild.panel-title:not(.collapsed):hover {
+  color: #fff;
+}
+/* 內層有子項且開著項目 */
+#side_panel ul li a.haschild.panel-title:not(.collapsed) {
+  color: #fff;
+  background: #4a7c9f;
+}
+/* 選單樣式 end */
+
+/* 頁籤上的新增按鈕要明顯一點 begin */
+span.el-tabs__new-tab {
+  border: 1px solid #0d6efd !important;
+}
+i.el-icon-plus {
+  color: #0d6efd !important;
+}
+/* 頁籤上的新增按鈕要明顯一點 end */
+/* group by 用 */
+.groupbyOverflow {
+  overflow: scroll;
+  height: 750px;
+}
+
+.col.plotly_card {
+  min-width: 370px;
+}
+.plotly_card {
+  /*min-width: 385px;*/
+  margin-bottom: 8px;
+}
+.js-plotly-plot,
+.plot-container {
+  /* height: 340px;*/
+  /* height: 100vh; */
+  height: 100%;
+  min-height: 400px;
+}
+
+.plotly_card .card-body {
+  padding: 0.5rem;
+  height: 350px;
+}
+.el-tabs__content {
+  overflow: scroll;
+  /* height: calc(100% - 40px); */
+  max-height: 55%;
+}
+
+.el-pagination .btn-prev .el-icon {
+  display: inline-block !important;
+}
+
+.el-tabs__content {
+  overflow: auto;
+}
+
+#app {
+  height: 100%;
+  margin: 0;
+}
+
+/* #container .row, */
+#menuPanel {
+  height: 100%;
+  /* max-height: 853px; */
+}
+.frameContainer {
+  /* padding: 0.5%; */
+  overflow-x: hidden;
+  overflow-y: hidden;
+  height: 83vh;
+  width: 88vw;
+}
+.frameComponent {
+  overflow-y: scroll;
+  height: calc(100vh - 110px);
+}
+
+.menuClose {
+  margin-left: -17%;
+}
+
+.el-card__header .card-header {
+  padding: 0;
+  background-color: rgb(255 255 255 / 3%);
+  border: none;
+}
+
+/* Login */
+
+#login-app {
+  background: #d8d8d8;
+  display: flex;
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  display: -moz-flex;
+  display: -webkit-flex;
+  display: -ms-flex;
+}
+
+.login-block {
+  width: 560px;
+  background: #fff;
+  border-radius: 8px;
+  bottom: auto;
+  margin: auto;
+  text-align: center;
+  box-shadow: 0px 7px 10px #848484;
+}
+
+.login-input-group {
+  max-width: 300px;
+  padding: 0 20px !important;
+  margin: 0 auto 5px auto !important;
+}
+
+.login-input-group li {
+  position: relative;
+}
+
+input.login-id {
+  border-radius: 5px 5px 0 0;
+  padding-left: 38px;
+  z-index: 2;
+}
+.login-id:focus {
+  position: relative;
+  z-index: 1;
+}
+
+input.login-pw {
+  border-radius: 0px 0px 5px 5px;
+  border-top-color: transparent;
+  padding-left: 38px;
+}
+
+.login-id_label,
+.login-pw_label {
+  position: absolute;
+  z-index: 2;
+}
+
+.login-id_label {
+  top: 10px;
+  left: 10px;
+  background: url('~@/assets/user-shape.png') no-repeat;
+  padding: 10px;
+  background-size: 20px 20px;
+}
+
+.login-pw_label {
+  top: 10px;
+  left: 10px;
+  background: url('~@/assets/locked.png') no-repeat;
+  padding: 10px;
+  background-size: 20px 20px;
+}
+
+.login-btn {
+  max-width: 300px;
+  padding: 0 20px;
+  margin: 10px auto 10px auto;
+  text-align: center;
+}
+
+.login-btn button {
+  display: block;
+  padding: 0.2rem 0.75rem;
+}
+
+.forgetpw-signup-link {
+  display: inline-block;
+  padding-bottom: 3rem;
+}
+
+.forgetpw-signup-link li {
+  position: relative;
+  display: inline-block;
+  padding-right: 16px;
+  font-size: 14px;
+}
+
+.forgetpw-signup-link li::after {
+  content: '|';
+  color: #ddd;
+  position: absolute;
+  left: 0;
+}
+
+.forgetpw-signup-link li:first-child::after {
+  display: none;
+}
+
+.forgetpw-signup-link li:last-child {
+  padding-right: 0;
+  padding-left: 16px;
+}
+
+/* dialog彈出視窗*/
+/* .el-overlay {
+}
+.el-popup-parent--hidden {
+  width: 100% !important;
+  padding-right: 0 !important;
+} */
+
+/* 頁面標題 */
+.pageTit h4 {
+  margin: 0;
+  font-weight: 600;
+  color: #606266;
+  padding: 0.8rem;
+  background: #eee;
+  border-left: 8px solid #646c75;
+  line-height: 1;
+}
+
+@media (max-width: 767px) {
+  .login-block {
+    max-width: 350px;
+  }
+
+  .login-block img.img-fluid {
+    max-width: 90%;
+  }
+}
+
+@media (max-width: 400px) {
+  .login-block {
+    max-width: 100%;
+    margin: 53% 9%;
+  }
+}
+
+@media (max-width: 375px) {
+  .login-block {
+    max-width: 100%;
+    margin: 60% 9%;
+  }
+}
+
+.el-tag {
+  white-space: normal;
+  height: auto;
+  padding: 4px 10px;
+}
+
+.el-form-item.is-required:not(.is-no-asterisk).asterisk-left
+  > .el-form-item__label-wrap
+  > .el-form-item__label:before,
+.el-form-item.is-required:not(.is-no-asterisk).asterisk-left > .el-form-item__label:before {
+  color: red;
+}
